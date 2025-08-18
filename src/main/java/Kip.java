@@ -33,6 +33,16 @@ public class Kip {
                     out += (i + 1) + ". " + tasks[i] + "\n";
                 }
                 output(out);
+            } else if (userInput.startsWith("mark")) {
+                String[] parts = userInput.split(" ");
+                int taskIndex = Integer.parseInt(parts[1]) - 1;
+                tasks[taskIndex].markAsDone();
+                output("Nice! I've marked this task as done:\n" + tasks[taskIndex]);
+            } else if (userInput.startsWith("unmark")) {
+                String[] parts = userInput.split(" ");
+                int taskIndex = Integer.parseInt(parts[1]) - 1;
+                tasks[taskIndex].unmarkAsDone();
+                output("OK, I've marked this task as not done yet:\n" + tasks[taskIndex]);
             } else {
                 // Store the input in the array if there's space
                 if (inputCount < MAX_INPUTS) {
