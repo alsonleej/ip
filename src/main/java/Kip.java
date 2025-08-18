@@ -16,7 +16,7 @@ public class Kip {
         Scanner scanner = new Scanner(System.in);
         String userInput;
 
-        String[] userInputs = new String[MAX_INPUTS];
+        Task[] tasks = new Task[MAX_INPUTS];
         int inputCount = 0;
         
         while (true) {
@@ -28,15 +28,15 @@ public class Kip {
             } else if (userInput.equalsIgnoreCase("list")) {
                 // Show all stored inputs
 
-                String out = "";
+                String out = "Here are the tasks in your list:\n";
                 for (int i = 0; i < inputCount; i++) {
-                    out += (i + 1) + ". " + userInputs[i] + "\n";
+                    out += (i + 1) + ". " + tasks[i] + "\n";
                 }
                 output(out);
             } else {
                 // Store the input in the array if there's space
                 if (inputCount < MAX_INPUTS) {
-                    userInputs[inputCount] = userInput;
+                    tasks[inputCount] = new Task(userInput);
                     inputCount++;
                     output("added:" + userInput);
                 } else {
