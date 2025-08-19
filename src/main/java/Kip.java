@@ -10,7 +10,7 @@ public class Kip {
         System.out.println(output);
     }
 
-    private static String[] parse(String userInput) {
+    private static Instruction parse(String userInput) {
         // userInput = command task /datetime
         String[] parts = userInput.split("/", 2); // [command task, datetimes]
         String instruction = parts[0]; // command task
@@ -20,7 +20,7 @@ public class Kip {
         String task = instructionParts[1]; // task
         
         String[] datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
-        return new String[] {command, task, datetimes[0], datetimes[1]};
+        return new Instruction(command, task, datetimes);
     }
 
     public static void main(String[] args) {
@@ -28,28 +28,30 @@ public class Kip {
         
         Scanner scanner = new Scanner(System.in);
         String userInput;
-        String[] command;
+        Instruction instruction;
+        int taskIndex;
 
         Task[] tasks = new Task[MAX_INPUTS];
         int inputCount = 0;
         
         while (true) {
             userInput = scanner.nextLine().trim();
-            command = parse(userInput);
+
+            instruction = parse(userInput);
             
-            Command cmd = Command.fromString(command[0]);
+            Command cmd = Command.fromString(instruction.getCommand());
             if (cmd == null) {
-                output("Unknown command: " + command[0]);
+                output("Unknown command: " + instruction.getCommand());
                 continue;
             }
             
             switch (cmd) {
-                case BYE:
+                case BYE: // eg: bye
                     output("Bye. Hope to see you again soon!");
                     scanner.close();
                     return;
                     
-                case LIST:
+                case LIST: // eg: list
                     String out = "Here are the tasks in your list:\n";
                     for (int i = 0; i < inputCount; i++) {
                         out += (i + 1) + ". " + tasks[i] + "\n";
@@ -57,89 +59,56 @@ public class Kip {
                     output(out);
                     break;
                     
-                case MARK:
-                    try {
-                        String[] parts = userInput.split(" ");
-                        int taskIndex = Integer.parseInt(parts[1]) - 1;
-                        if (taskIndex >= 0 && taskIndex < inputCount) {
-                            tasks[taskIndex].markAsDone();
-                            output("Nice! I've marked this task as done:\n" + tasks[taskIndex]);
-                        } else {
-                            output("Invalid task number!");
-                        }
-                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                        output("Please provide a valid task number!");
+                case MARK: // eg: mark 1
+                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                    if (taskIndex >= 0 && taskIndex < inputCount) {
+                        tasks[taskIndex].markAsDone();
+                        output("Nice! I've marked this task as done:\n" + tasks[taskIndex]);
+                    } else {
+                        output("Invalid task number!");
                     }
-                    break;
+
                     
-                case UNMARK:
-                    try {
-                        String[] parts = userInput.split(" ");
-                        int taskIndex = Integer.parseInt(parts[1]) - 1;
-                        if (taskIndex >= 0 && taskIndex < inputCount) {
-                            tasks[taskIndex].unmarkAsDone();
-                            output("OK, I've marked this task as not done yet:\n" + tasks[taskIndex]);
-                        } else {
-                            output("Invalid task number!");
-                        }
-                    } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-                        output("Please provide a valid task number!");
+                case UNMARK: // eg: unmark 1
+                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                    if (taskIndex >= 0 && taskIndex < inputCount) {
+                        tasks[taskIndex].unmarkAsDone();
+                        output("OK, I've marked this task as not done yet:\n" + tasks[taskIndex]);
+                    } else {
+                        output("Invalid task number!");
                     }
-                    break;
-                    
-                case TODO:
-                case DEADLINE:
-                case EVENT:
-                    if (inputCount >= MAX_INPUTS) {
+ 
+                //TASK ADDING   
+                case TODO: // eg: todo read book
+                    inputCount++;
+                    if (inputCount > MAX_INPUTS) {
                         output("Array is full! Cannot store more inputs.");
-                        break;
+                        scanner.close();
+                        return;
+                    }   
+                    tasks[inputCount - 1] = new ToDo(instruction.getTask());
+                    output("Got it. I've added this task:\n" + tasks[inputCount - 1]);
+                    break;      
+
+                case DEADLINE: // eg: deadline read book /2025-08-19
+                    inputCount++;
+                    if (inputCount > MAX_INPUTS) {
+                        output("Array is full! Cannot store more inputs.");
+                        scanner.close();
+                        return;
                     }
-                    
-                    TaskType taskType = TaskType.fromString(command[0]);
-                    if (taskType == null) {
-                        output("Unknown task type: " + command[0]);
-                        break;
-                    }
-                    
-                    try {
-                        switch (taskType) {
-                            case TODO:
-                                if (command[1].trim().isEmpty()) {
-                                    output("Todo description cannot be empty!");
-                                    break;
-                                }
-                                tasks[inputCount] = new ToDo(command[1]);
-                                break;
-                                
-                            case DEADLINE:
-                                if (command[1].trim().isEmpty() || command[2].trim().isEmpty()) {
-                                    output("Deadline description and due date cannot be empty!");
-                                    break;
-                                }
-                                tasks[inputCount] = new Deadline(command[1], command[2]);
-                                break;
-                                
-                            case EVENT:
-                                if (command[1].trim().isEmpty() || command[2].trim().isEmpty() || command[3].trim().isEmpty()) {
-                                    output("Event description, start time, and end time cannot be empty!");
-                                    break;
-                                }
-                                tasks[inputCount] = new Event(command[1], command[2], command[3]);
-                                break;
-                        }
-                        
-                        if (tasks[inputCount] != null) {
-                            inputCount++;
-                            output("Added: " + tasks[inputCount - 1]);
-                        }
-                    } catch (Exception e) {
-                        output("Error creating task: " + e.getMessage());
-                    }
+                    tasks[inputCount - 1] = new Deadline(instruction.getTask(), instruction.getDatetimes()[0]);
+                    output("Got it. I've added this task:\n" + tasks[inputCount - 1]);
                     break;
-                    
-                default:
-                    output("Unknown command: " + command[0]);
-                    break;
+
+                case EVENT: // eg: event read book /2025-08-19 /2025-08-20
+                    inputCount++;
+                    if (inputCount > MAX_INPUTS) {
+                        output("Array is full! Cannot store more inputs.");
+                        scanner.close();
+                        return;
+                    }
+                    tasks[inputCount - 1] = new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]);
             }
         }
     }
