@@ -22,7 +22,7 @@ public class Kip {
         if (instructionParts.length > 1) {
             task = instructionParts[1]; // task
         }
-        
+
         String[] datetimes = new String[0];
         if (parts.length > 1) {
             datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
@@ -63,6 +63,7 @@ public class Kip {
                     for (int i = 0; i < inputCount; i++) {
                         out += (i + 1) + ". " + tasks[i] + "\n";
                     }
+                    out += "Now you have " + inputCount + " tasks in the list.";
                     output(out);
                     break;
                     
