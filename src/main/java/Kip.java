@@ -10,6 +10,7 @@ public class Kip {
         System.out.println(output);
     }
 
+
     public static void main(String[] args) {
         output("Hello! I'm Kip\nWhat can I do for you?\n");
         
@@ -33,6 +34,8 @@ public class Kip {
                     out += (i + 1) + ". " + tasks[i] + "\n";
                 }
                 output(out);
+
+            // Tasks marking and unmarking
             } else if (userInput.startsWith("mark")) {
                 String[] parts = userInput.split(" ");
                 int taskIndex = Integer.parseInt(parts[1]) - 1;
@@ -43,9 +46,29 @@ public class Kip {
                 int taskIndex = Integer.parseInt(parts[1]) - 1;
                 tasks[taskIndex].unmarkAsDone();
                 output("OK, I've marked this task as not done yet:\n" + tasks[taskIndex]);
+
+            // Tasks adding
             } else {
                 // Store the input in the array if there's space
-                if (inputCount < MAX_INPUTS) {
+                if (inputCount >= MAX_INPUTS) {
+                    output("Array is full! Cannot store more inputs.");
+                } else {
+                    if (userInput.startsWith("todo")) {
+                        String[] parts = userInput.split(" ");
+                        String description = userInput.substring(5);
+                        tasks[inputCount] = new ToDo(description);
+                    } else if (userInput.startsWith("deadline")) {
+                        String[] parts = userInput.split(" ");
+                        String description = userInput.substring(8);
+                        String by = parts[parts.length - 1];
+                        tasks[inputCount] = new Deadline(description, by);
+                    } else if (userInput.startsWith("event")) {
+                        String[] parts = userInput.split(" ");
+                        String description = userInput.substring(6);
+                        String from = parts[parts.length - 2];
+                        String to = parts[parts.length - 1];
+                        tasks[inputCount] = new Event(description, from, to);
+                    }
                     tasks[inputCount] = new Task(userInput);
                     inputCount++;
                     output("added:" + userInput);
