@@ -17,9 +17,16 @@ public class Kip {
         String[] instructionParts = instruction.split(" ", 2); // [command, task] - limit to 2 parts
         
         String command = instructionParts[0]; // command
-        String task = instructionParts[1]; // task
+
+        String task = "";
+        if (instructionParts.length > 1) {
+            task = instructionParts[1]; // task
+        }
         
-        String[] datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
+        String[] datetimes = new String[0];
+        if (parts.length > 1) {
+            datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
+        }
         return new Instruction(command, task, datetimes);
     }
 
