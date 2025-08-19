@@ -8,4 +8,16 @@ public class Instruction {
         this.task = task;
         this.datetimes = datetimes;
     }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public String[] getDatetimes() {
+        return datetimes;
+    }
 }
