@@ -12,28 +12,15 @@ public class Kip {
 
     private static String[] parse(String userInput) {
         // userInput = command task /datetime
-        String[] parts = userInput.split("/"); // [command task, datetime, datetime2]
+        String[] parts = userInput.split("/", 2); // [command task, datetimes]
         String instruction = parts[0]; // command task
         String[] instructionParts = instruction.split(" ", 2); // [command, task] - limit to 2 parts
-        
-        if (instructionParts.length < 2) {
-            return new String[] {instructionParts[0], "", "", ""};
-        }
         
         String command = instructionParts[0]; // command
         String task = instructionParts[1]; // task
         
-        // Handle datetime parts if they exist
-        String date = "";
-        String time = "";
-        if (parts.length > 1) {
-            date = parts[1];
-        }
-        if (parts.length > 2) {
-            time = parts[2];
-        }
-   
-        return new String[] {command, task, date, time};
+        String[] datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
+        return new String[] {command, task, datetimes[0], datetimes[1]};
     }
 
     public static void main(String[] args) {
