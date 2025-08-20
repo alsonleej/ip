@@ -8,7 +8,8 @@ import kip.command.Parser;
 public class Event extends Task {
     private LocalDateTime from;
     private LocalDateTime to;
-    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
+    private static final DateTimeFormatter DISPLAY_FORMATTER = 
+        DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
 
     public Event(String description, String from, String to) throws InvalidDateException {
         super(description);
@@ -32,6 +33,7 @@ public class Event extends Task {
 
     @Override
     public String toString() {
-        return "[E]" + super.toString() + " (from: " + from.format(DISPLAY_FORMATTER) + " to: " + to.format(DISPLAY_FORMATTER) + ")";
+        return "[E]" + super.toString() + " (from: " + from.format(DISPLAY_FORMATTER) 
+                + " to: " + to.format(DISPLAY_FORMATTER) + ")";
     }
 }
