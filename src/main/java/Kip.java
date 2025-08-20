@@ -75,6 +75,7 @@ public class Kip {
                     } else {
                         output("Invalid task number!");
                     }
+                    break;
 
                     
                 case UNMARK: // eg: unmark 1
@@ -95,7 +96,7 @@ public class Kip {
                         return;
                     }   
                     tasks[inputCount - 1] = new ToDo(instruction.getTask());
-                    output("Got it. I've added this task:\n" + tasks[inputCount - 1]);
+                    output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
                     break;      
 
                 case DEADLINE: // eg: deadline read book /2025-08-19
@@ -106,7 +107,7 @@ public class Kip {
                         return;
                     }
                     tasks[inputCount - 1] = new Deadline(instruction.getTask(), instruction.getDatetimes()[0]);
-                    output("Got it. I've added this task:\n" + tasks[inputCount - 1]);
+                    output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
                     break;
 
                 case EVENT: // eg: event read book /2025-08-19 /2025-08-20
@@ -117,6 +118,8 @@ public class Kip {
                         return;
                     }
                     tasks[inputCount - 1] = new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]);
+                    output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
+                    break;
             }
         }
     }
