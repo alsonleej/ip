@@ -1,7 +1,7 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Kip {
-    private static final int MAX_INPUTS = 100;
 
     private static void output(String text) {
         String output = "____________________________________________________________\n"
@@ -40,8 +40,7 @@ public class Kip {
         Instruction instruction;
         int taskIndex;
 
-        Task[] tasks = new Task[MAX_INPUTS];
-        int inputCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         
         while (true) {
             try {
@@ -62,18 +61,18 @@ public class Kip {
                         
                     case LIST: // eg: list
                         String out = "Here are the tasks in your list:\n";
-                        for (int i = 0; i < inputCount; i++) {
-                            out += (i + 1) + ". " + tasks[i] + "\n";
+                        for (int i = 0; i < tasks.size(); i++) {
+                            out += (i + 1) + ". " + tasks.get(i) + "\n";
                         }
-                        out += "Now you have " + inputCount + " tasks in the list.";
+                        out += "Now you have " + tasks.size() + " tasks in the list.";
                         output(out);
                         break;
                         
                     case MARK: // eg: mark 1
                         taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                        if (taskIndex >= 0 && taskIndex < inputCount) {
-                            tasks[taskIndex].markAsDone();
-                            output("Nice! I've marked this task as done:\n" + tasks[taskIndex]);
+                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                            tasks.get(taskIndex).markAsDone();
+                            output("Nice! I've marked this task as done:\n" + tasks.get(taskIndex));
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
@@ -82,9 +81,9 @@ public class Kip {
                         
                     case UNMARK: // eg: unmark 1
                         taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                        if (taskIndex >= 0 && taskIndex < inputCount) {
-                            tasks[taskIndex].unmarkAsDone();
-                            output("OK, I've marked this task as not done yet:\n" + tasks[taskIndex]);
+                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                            tasks.get(taskIndex).unmarkAsDone();
+                            output("OK, I've marked this task as not done yet:\n" + tasks.get(taskIndex));
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
@@ -92,29 +91,15 @@ public class Kip {
      
                     //TASK ADDING   
                     case TODO: // eg: todo read book
-                        inputCount++;
-                        if (inputCount > MAX_INPUTS) {
-                            output("Array is full! Cannot store more inputs.");
-                            scanner.close();
-                            return;
-                        }   
-
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("todo", "task description");
                         }
 
-                        tasks[inputCount - 1] = new ToDo(instruction.getTask());
-                        output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
+                        tasks.add(new ToDo(instruction.getTask()));
+                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
                         break;      
 
                     case DEADLINE: // eg: deadline read book /by 2025-08-19
-                        inputCount++;
-                        if (inputCount > MAX_INPUTS) {
-                            output("Array is full! Cannot store more inputs.");
-                            scanner.close();
-                            return;
-                        }
-
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("deadline", "task description");
                         }
@@ -123,18 +108,11 @@ public class Kip {
                             throw new IncompleteInstructionException("deadline", "date and time");
                         }
 
-                        tasks[inputCount - 1] = new Deadline(instruction.getTask(), instruction.getDatetimes()[0]);
-                        output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
+                        tasks.add(new Deadline(instruction.getTask(), instruction.getDatetimes()[0]));
+                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
                         break;
 
                     case EVENT: // eg: event read book /from 2025-08-19 /to 2025-08-20
-                        inputCount++;
-                        if (inputCount > MAX_INPUTS) {
-                            output("Array is full! Cannot store more inputs.");
-                            scanner.close();
-                            return;
-                        }
-
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("event", "task description");
                         }
@@ -143,8 +121,8 @@ public class Kip {
                             throw new IncompleteInstructionException("event", "date and time");
                         }
 
-                        tasks[inputCount - 1] = new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]);
-                        output("Got it. I've added this task:\n" + tasks[inputCount - 1] + "\nNow you have " + inputCount + " tasks in the list.");
+                        tasks.add(new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]));
+                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
                         break;
                 }
             } catch (IncompleteInstructionException e) {
