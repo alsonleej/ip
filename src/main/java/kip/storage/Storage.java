@@ -8,22 +8,57 @@ import kip.task.Deadline;
 import kip.task.Event;
 import kip.command.Parser;
 
-// Adapted from ChatGPT
-// with minor modifications
-
-// csv file format:
-// type,done,description,datetime1,datetime2
-// T,0,read book,,
-// D,1,read book,2025-08-19 0000,
-// E,0,read book,2025-08-19 0000,2025-08-20 0000
-
+/**
+ * Handles persistent storage of tasks using CSV file format in the Kip task management system.
+ * 
+ * <p>The Storage class provides functionality to save and load tasks from a CSV file,
+ * ensuring data persistence across application sessions. It automatically creates
+ * the storage file if it doesn't exist and handles all file I/O operations.</p>
+ * 
+ * <p>The CSV format used is:</p>
+ * <pre>
+ * type,done,description,datetime1,datetime2
+ * T,0,read book,,
+ * D,1,return book,2025-08-19 0000,
+ * E,0,meeting,2025-08-19 0000,2025-08-20 0000
+ * </pre>
+ * 
+ * <p>Where:</p>
+ * <ul>
+ *   <li><strong>type</strong>: T (ToDo), D (Deadline), or E (Event)</li>
+ *   <li><strong>done</strong>: 0 (false) or 1 (true)</li>
+ *   <li><strong>description</strong>: Task description</li>
+ *   <li><strong>datetime1</strong>: Deadline date or event start time</li>
+ *   <li><strong>datetime2</strong>: Event end time (unused for ToDo/Deadline)</li>
+ * </ul>
+ * 
+ * <p>All file operations are performed on the tasks.csv file located in the
+ * storage package directory.</p>
+ * 
+ * @author alsonleej
+ * @version 1.0
+ * @since 2025
+ * @see Task
+ * @see Parser
+ */
 public class Storage {
+    /** Path to the CSV file for storing tasks */
     private static final String CSV_FILE = "src/main/java/kip/storage/tasks.csv";
+    /** Header line for the CSV file */
     private static final String CSV_HEADER = "type,done,description,datetime1,datetime2";
     
     /**
-     * Loads tasks from the CSV file
-     * @return ArrayList of loaded tasks
+     * Loads tasks from the CSV file.
+     * 
+     * <p>This method reads the CSV file and reconstructs Task objects from the stored data.
+     * If the file doesn't exist, it creates a new empty file. The method handles all
+     * three task types and automatically marks tasks as done if they were previously
+     * completed.</p>
+     * 
+     * <p>Error handling is implemented to skip invalid lines and continue loading
+     * valid tasks, ensuring the application remains robust even with corrupted data.</p>
+     * 
+     * @return ArrayList of loaded tasks, empty list if file is new or empty
      */
     public static ArrayList<Task> loadTasks() {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -33,7 +68,7 @@ public class Storage {
         if (!csvFile.exists()) {
             try {
                 csvFile.createNewFile();
-
+                System.out.println("Created new " + CSV_FILE + " file");
             } catch (IOException e) {
                 System.out.println("Error creating " + CSV_FILE + ": " + e.getMessage());
             }
@@ -80,7 +115,19 @@ public class Storage {
     }
     
     /**
-     * Saves tasks to the CSV file
+     * Saves tasks to the CSV file.
+     * 
+     * <p>This method writes all tasks in the provided list to the CSV file, overwriting
+     * any existing content. The file is created if it doesn't exist. Each task is
+     * converted to its CSV representation based on its type.</p>
+     * 
+     * <p>The method handles all task types:</p>
+     * <ul>
+     *   <li><strong>ToDo</strong>: Only type and description are stored</li>
+     *   <li><strong>Deadline</strong>: Type, description, and deadline date are stored</li>
+     *   <li><strong>Event</strong>: Type, description, start time, and end time are stored</li>
+     * </ul>
+     * 
      * @param tasks ArrayList of tasks to save
      */
     public static void saveTasks(ArrayList<Task> tasks) {
