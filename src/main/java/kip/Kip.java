@@ -30,6 +30,7 @@ public class Kip {
         String userInput;
         Instruction instruction;
         int taskIndex;
+        String out;
 
         ArrayList<Task> tasks = Storage.loadTasks();
         
@@ -51,7 +52,7 @@ public class Kip {
                         return;
                         
                     case LIST: // eg: list
-                        String out = "Here are the tasks in your list:\n";
+                        out = "Here are the tasks in your list:\n";
                         for (int i = 0; i < tasks.size(); i++) {
                             out += (i + 1) + ". " + tasks.get(i) + "\n";
                         }
@@ -97,6 +98,27 @@ public class Kip {
                             throw new NumberFormatException("Invalid task number!");
                         }
                         break;
+
+                    case FIND: // eg: find book
+                        String keyword = instruction.getTask();
+                        ArrayList<Task> matchingTasks = new ArrayList<>();
+                        for (Task task : tasks) {
+                            if (task.getDescription().contains(keyword)) {
+                                matchingTasks.add(task);
+                            }
+                        }
+
+                        if (matchingTasks.isEmpty()) {
+                            output("No matching tasks found.");
+                        } else {
+                            out = "Here are the matching tasks in your list:\n";
+                            for (int i = 0; i < matchingTasks.size(); i++) {
+                                out += (i + 1) + ". " + matchingTasks.get(i) + "\n";
+                            }
+                            output(out);
+                        }
+                        break;
+                    
 
                     //TASK ADDING   
                     case TODO: // eg: todo read book
