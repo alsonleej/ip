@@ -1,3 +1,5 @@
+package kip.exception;
+
 public class IncompleteInstructionException extends Exception {
     private final String command;
     private final String missingField;

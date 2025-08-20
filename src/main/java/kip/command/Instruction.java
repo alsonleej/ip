@@ -1,3 +1,5 @@
+package kip.command;
+
 public class Instruction {
     private String command;
     private String task;

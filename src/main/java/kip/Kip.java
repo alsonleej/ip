@@ -1,5 +1,18 @@
+package kip;
+
 import java.util.Scanner;
 import java.util.ArrayList;
+import kip.task.Task;
+import kip.task.ToDo;
+import kip.task.Deadline;
+import kip.task.Event;
+import kip.command.Command;
+import kip.command.Instruction;
+import kip.command.Parser;
+import kip.exception.UnknownCommandException;
+import kip.exception.IncompleteInstructionException;
+import kip.exception.InvalidDateException;
+import kip.storage.Storage;
 
 public class Kip {
 

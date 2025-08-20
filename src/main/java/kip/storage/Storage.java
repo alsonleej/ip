@@ -1,5 +1,12 @@
+package kip.storage;
+
 import java.io.*;
 import java.util.ArrayList;
+import kip.task.Task;
+import kip.task.ToDo;
+import kip.task.Deadline;
+import kip.task.Event;
+import kip.command.Parser;
 
 // Adapted from ChatGPT
 // with minor modifications
@@ -26,7 +33,7 @@ public class Storage {
         if (!csvFile.exists()) {
             try {
                 csvFile.createNewFile();
-                System.out.println("Created new " + CSV_FILE + " file");
+
             } catch (IOException e) {
                 System.out.println("Error creating " + CSV_FILE + ": " + e.getMessage());
             }
@@ -84,7 +91,7 @@ public class Storage {
             // Write each task
             for (Task task : tasks) {
                 String type = "";
-                String done = task.isDone ? "1" : "0";
+                String done = task.isDone() ? "1" : "0";
                 String description = task.getDescription();
                 String datetime1 = "";
                 String datetime2 = "";

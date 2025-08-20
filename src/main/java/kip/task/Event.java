@@ -1,5 +1,9 @@
+package kip.task;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import kip.exception.InvalidDateException;
+import kip.command.Parser;
 
 public class Event extends Task {
     private LocalDateTime from;
