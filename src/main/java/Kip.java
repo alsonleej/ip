@@ -86,6 +86,7 @@ public class Kip {
                     } else {
                         output("Invalid task number!");
                     }
+                    break;
  
                 //TASK ADDING   
                 case TODO: // eg: todo read book
