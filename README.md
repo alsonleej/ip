@@ -22,3 +22,22 @@ src/main/java/kip/
     ├── Storage.java           # File I/O operations
     └── tasks.csv              # Data file
 ```
+
+# Note to self
+
+## To test methods with gradle
+```
+./gradlew test
+```
+
+# To test input and outputs
+```
+PS C:\Users\alsonleej\ip\ip\text-ui-test> ./runtest.bat
+```
+
+# To update outputs
+```
+PS C:\Users\alsonleej\ip\ip\text-ui-test> ./runtest.bat
+cp .\ACTUAL.TXT .\EXPECTED.TXT
+```
+
