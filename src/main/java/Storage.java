@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public class Storage {
     private static final String CSV_FILE = "tasks.csv";
     private static final String CSV_HEADER = "type,done,description,datetime1,datetime2";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     /**
      * Loads tasks from the CSV file
@@ -45,12 +44,26 @@ public class Storage {
                 // Skip header line
             } else if (firstLine != null) {
                 // First line is data, parse it
-                parseTaskLine(firstLine, tasks);
+                try {
+                    Task task = Parser.parseTaskLine(firstLine);
+                    if (task != null) {
+                        tasks.add(task);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error parsing first line: " + firstLine + " - " + e.getMessage());
+                }
             }
             
             // Read remaining lines
             while ((line = reader.readLine()) != null) {
-                parseTaskLine(line, tasks);
+                try {
+                    Task task = Parser.parseTaskLine(line);
+                    if (task != null) {
+                        tasks.add(task);
+                    }
+                } catch (Exception e) {
+                    System.out.println("Error parsing line: " + line + " - " + e.getMessage());
+                }
             }
             
             System.out.println("Loaded " + tasks.size() + " tasks from " + CSV_FILE);
@@ -83,12 +96,12 @@ public class Storage {
                 } else if (task instanceof Deadline) {
                     type = "D";
                     Deadline deadline = (Deadline) task;
-                    datetime1 = deadline.getBy().format(DATE_FORMATTER);
+                    datetime1 = deadline.getBy().format(Parser.getDateFormatter());
                 } else if (task instanceof Event) {
                     type = "E";
                     Event event = (Event) task;
-                    datetime1 = event.getFrom().format(DATE_FORMATTER);
-                    datetime2 = event.getTo().format(DATE_FORMATTER);
+                    datetime1 = event.getFrom().format(Parser.getDateFormatter());
+                    datetime2 = event.getTo().format(Parser.getDateFormatter());
                 }
                 
                 writer.println(String.format("%s,%s,%s,%s,%s", 
@@ -96,52 +109,6 @@ public class Storage {
             }
         } catch (IOException e) {
             System.out.println("Error saving " + CSV_FILE + ": " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Parses a single CSV line into a Task object
-     * @param line CSV line to parse
-     * @param tasks ArrayList to add the parsed task to
-     */
-    private static void parseTaskLine(String line, ArrayList<Task> tasks) {
-        try {
-            String[] parts = line.split(",");
-            if (parts.length < 3) return; // Skip invalid lines
-            
-            String type = parts[0].trim();
-            boolean done = parts[1].trim().equals("1");
-            String description = parts[2].trim();
-            
-            Task task = null;
-            
-            switch (type) {
-                case "T": // TODO
-                    task = new ToDo(description);
-                    break;
-                case "D": // DEADLINE
-                    if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
-                        LocalDate date = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
-                        task = new Deadline(description, date);
-                    }
-                    break;
-                case "E": // EVENT
-                    if (parts.length >= 5 && !parts[3].trim().isEmpty() && !parts[4].trim().isEmpty()) {
-                        LocalDate startDate = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
-                        LocalDate endDate = LocalDate.parse(parts[4].trim(), DATE_FORMATTER);
-                        task = new Event(description, startDate, endDate);
-                    }
-                    break;
-            }
-            
-            if (task != null) {
-                if (done) {
-                    task.markAsDone();
-                }
-                tasks.add(task);
-            }
-        } catch (Exception e) {
-            System.out.println("Error parsing line: " + line + " - " + e.getMessage());
         }
     }
 }

@@ -10,28 +10,6 @@ public class Kip {
         System.out.println(output);
     }
 
-    private static Instruction parse(String userInput) {
-        // userInput = command task /datetime
-        String[] parts = userInput.split("/", 2); // [command task, datetimes]
-        String instruction = parts[0]; // command task
-        String[] instructionParts = instruction.split(" ", 2); // [command, task] - limit to 2 parts
-        
-        String command = instructionParts[0]; // command
-
-        String task = "";
-        if (instructionParts.length > 1) {
-            task = instructionParts[1]; // task
-        }
-
-        String[] datetimes = new String[0];
-        if (parts.length > 1) {
-            datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
-        }
-        return new Instruction(command, task, datetimes);
-    }
-
-
-
     public static void main(String[] args) {
         output("Hello! I'm Kip\nWhat can I do for you?\n");
         
@@ -46,7 +24,7 @@ public class Kip {
             try {
                 userInput = scanner.nextLine().trim();
 
-                instruction = parse(userInput);
+                instruction = Parser.parseUserInput(userInput);
 
                 Command cmd = Command.fromString(instruction.getCommand());
                 if (cmd == null) {
