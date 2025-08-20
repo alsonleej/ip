@@ -118,7 +118,7 @@ public class Kip {
                         Storage.saveTasks(tasks);
                         break;      
 
-                    case DEADLINE: // eg: deadline read book /by 2025-08-19
+                    case DEADLINE: // eg: deadline read book /by 2019-10-15
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("deadline", "task description");
                         }
@@ -132,7 +132,7 @@ public class Kip {
                         Storage.saveTasks(tasks);
                         break;
 
-                    case EVENT: // eg: event read book /from 2025-08-19 /to 2025-08-20
+                    case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("event", "task description");
                         }
@@ -152,6 +152,8 @@ public class Kip {
                 output("ERROR!!! " + e.getMessage());
             } catch (NumberFormatException e) {
                 output("ERROR!!! Please provide a valid task number.");
+            } catch (InvalidDateException e) {
+                output("ERROR!!! " + e.getMessage());
             } catch (Exception e) {
                 output("ERROR!!! An unexpected error occurred: " + e.getMessage());
             }

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 // csv file format:
 // type,done,description,datetime1,datetime2
-// T,0,read book,2025-08-19,2025-08-20
-// D,1,read book,2025-08-19
+// T,0,read book,,
+// D,1,read book,2025-08-19,
 // E,0,read book,2025-08-19,2025-08-20
 
 public class Storage {
@@ -83,28 +83,12 @@ public class Storage {
                 } else if (task instanceof Deadline) {
                     type = "D";
                     Deadline deadline = (Deadline) task;
-                    // Extract date from the by field (remove "by: " prefix)
-                    String byValue = deadline.toString();
-                    int startIndex = byValue.lastIndexOf("(") + 1;
-                    int endIndex = byValue.lastIndexOf(")");
-                    if (startIndex > 0 && endIndex > startIndex) {
-                        datetime1 = byValue.substring(startIndex, endIndex).replace("by: ", "");
-                    }
+                    datetime1 = deadline.getBy().format(DATE_FORMATTER);
                 } else if (task instanceof Event) {
                     type = "E";
                     Event event = (Event) task;
-                    // Extract dates from the event string
-                    String eventStr = event.toString();
-                    int startIndex = eventStr.lastIndexOf("(") + 1;
-                    int endIndex = eventStr.lastIndexOf(")");
-                    if (startIndex > 0 && endIndex > startIndex) {
-                        String datePart = eventStr.substring(startIndex, endIndex);
-                        String[] dates = datePart.split("to: ");
-                        if (dates.length >= 2) {
-                            datetime1 = dates[0].replace("from: ", "").trim();
-                            datetime2 = dates[1].trim();
-                        }
-                    }
+                    datetime1 = event.getFrom().format(DATE_FORMATTER);
+                    datetime2 = event.getTo().format(DATE_FORMATTER);
                 }
                 
                 writer.println(String.format("%s,%s,%s,%s,%s", 
@@ -138,14 +122,14 @@ public class Storage {
                 case "D": // DEADLINE
                     if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
                         LocalDate date = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
-                        task = new Deadline(description, date.toString());
+                        task = new Deadline(description, date);
                     }
                     break;
                 case "E": // EVENT
                     if (parts.length >= 5 && !parts[3].trim().isEmpty() && !parts[4].trim().isEmpty()) {
                         LocalDate startDate = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
                         LocalDate endDate = LocalDate.parse(parts[4].trim(), DATE_FORMATTER);
-                        task = new Event(description, startDate.toString(), endDate.toString());
+                        task = new Event(description, startDate, endDate);
                     }
                     break;
             }

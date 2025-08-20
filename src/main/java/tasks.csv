@@ -1,5 +1,4 @@
 type,done,description,datetime1,datetime2
 T,1,borrow book,,
-E,0,project meeting ,Mon 2pm,4pm
-D,0,h ,j: 7,
+E,0,project meeting ,2/12/2019 1800,7/12/2019 1800
 T,0,j,,
