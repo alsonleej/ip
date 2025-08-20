@@ -7,21 +7,21 @@ public class TaskTest {
     
     @Test
     public void testTaskCreation() {
-        Task task = new Task("Test task");
+        Task task = new ToDo("Test task");
         assertEquals("Test task", task.getDescription());
         assertFalse(task.isDone());
     }
     
     @Test
     public void testMarkAsDone() {
-        Task task = new Task("Test task");
+        Task task = new ToDo("Test task");
         task.markAsDone();
         assertTrue(task.isDone());
     }
     
     @Test
     public void testUnmarkAsDone() {
-        Task task = new Task("Test task");
+        Task task = new ToDo("Test task");
         task.markAsDone();
         task.unmarkAsDone();
         assertFalse(task.isDone());
@@ -29,10 +29,28 @@ public class TaskTest {
     
     @Test
     public void testToString() {
-        Task task = new Task("Test task");
-        assertEquals("[ ] Test task", task.toString());
+        Task task = new ToDo("Test task");
+        assertEquals("[T][ ] Test task", task.toString());
         
         task.markAsDone();
-        assertEquals("[X] Test task", task.toString());
+        assertEquals("[T][X] Test task", task.toString());
+    }
+    
+    @Test
+    public void testTaskDescriptionValidation() {
+        // Test that null description throws exception
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ToDo(null);
+        });
+        
+        // Test that empty description throws exception
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ToDo("");
+        });
+        
+        // Test that whitespace-only description throws exception
+        assertThrows(IllegalArgumentException.class, () -> {
+            new ToDo("   ");
+        });
     }
 }
