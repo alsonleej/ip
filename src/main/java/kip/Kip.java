@@ -70,7 +70,11 @@ public class Kip {
      * @param args Command line arguments (not used)
      */
     public static void main(String[] args) {
-        output("Hello! I'm Kip\nWhat can I do for you?\n\nNote: Task descriptions and dates cannot contain commas (,) as they break the CSV format.\nSupported date formats: yyyy-MM-dd (e.g., 2019-10-15) or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)");
+        output("Hello! I'm Kip\nWhat can I do for you?\n\n"
+                + "Note: Task descriptions and dates cannot contain commas (,) "
+                + "as they break the CSV format.\n"
+                + "Supported date formats: yyyy-MM-dd (e.g., 2019-10-15) "
+                + "or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)");
         
         Scanner scanner = new Scanner(System.in);
         String userInput;
@@ -91,97 +95,108 @@ public class Kip {
                 }
                 
                 switch (cmd) {
-                    case BYE: // eg: bye
-                        output("Bye. Hope to see you again soon!");
-                        scanner.close();
-                        return;
-                        
-                    case LIST: // eg: list
-                        String out = "Here are the tasks in your list:\n";
-                        for (int i = 0; i < tasks.size(); i++) {
-                            out += (i + 1) + ". " + tasks.get(i) + "\n";
-                        }
-                        out += "Now you have " + tasks.size() + " tasks in the list.";
-                        output(out);
-                        break;
+                case BYE: // eg: bye
+                    output("Bye. Hope to see you again soon!");
+                    scanner.close();
+                    return;
+                    
+                case LIST: // eg: list
+                    String out = "Here are the tasks in your list:\n";
+                    for (int i = 0; i < tasks.size(); i++) {
+                        out += (i + 1) + ". " + tasks.get(i) + "\n";
+                    }
+                    out += "Now you have " + tasks.size() + " tasks in the list.";
+                    output(out);
+                    break;
 
-                    // After every modification to the task list, save all tasks to the file. 
-                    // Could be optimized by saving only the modified task to the file.
-                        
-                    case MARK: // eg: mark 1
-                        taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                            tasks.get(taskIndex).markAsDone();
-                            output("Nice! I've marked this task as done:\n" + tasks.get(taskIndex));
-                            Storage.saveTasks(tasks);
-                        } else {
-                            throw new NumberFormatException("Invalid task number!");
-                        }
-                        break;
+                // After every modification to the task list, save all tasks to the file. 
+                // Could be optimized by saving only the modified task to the file.
+                    
+                case MARK: // eg: mark 1
+                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                        tasks.get(taskIndex).markAsDone();
+                        output("Nice! I've marked this task as done:\n" 
+                                + tasks.get(taskIndex));
+                        Storage.saveTasks(tasks);
+                    } else {
+                        throw new NumberFormatException("Invalid task number!");
+                    }
+                    break;
 
-                        
-                    case UNMARK: // eg: unmark 1
-                        taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                            tasks.get(taskIndex).unmarkAsDone();
-                            output("OK, I've marked this task as not done yet:\n" + tasks.get(taskIndex));
-                            Storage.saveTasks(tasks);
-                        } else {
-                            throw new NumberFormatException("Invalid task number!");
-                        }
-                        break;
+                    
+                case UNMARK: // eg: unmark 1
+                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                        tasks.get(taskIndex).unmarkAsDone();
+                        output("OK, I've marked this task as not done yet:\n" 
+                                + tasks.get(taskIndex));
+                        Storage.saveTasks(tasks);
+                    } else {
+                        throw new NumberFormatException("Invalid task number!");
+                    }
+                    break;
 
-                        
-                    case DELETE: // eg: delete 1
-                        taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                            Task removedTask = tasks.remove(taskIndex);
-                            output("Noted. I've removed this task:\n" + removedTask 
+                    
+                case DELETE: // eg: delete 1
+                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                        Task removedTask = tasks.remove(taskIndex);
+                        output("Noted. I've removed this task:\n" + removedTask 
+                                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
+                    } else {
+                        throw new NumberFormatException("Invalid task number!");
+                    }
+                    break;
+
+                //TASK ADDING   
+                case TODO: // eg: todo read book
+                    if (instruction.getTask().isEmpty()) {
+                        throw new IncompleteInstructionException("todo", "task description");
+                    }
+
+                    tasks.add(new ToDo(instruction.getTask()));
+                    output("Got it. I've added this task:\n" 
+                            + tasks.get(tasks.size() - 1) 
                             + "\nNow you have " + tasks.size() + " tasks in the list.");
-                            Storage.saveTasks(tasks);
-                        } else {
-                            throw new NumberFormatException("Invalid task number!");
-                        }
-                        break;
+                    Storage.saveTasks(tasks);
+                    break;      
 
-                    //TASK ADDING   
-                    case TODO: // eg: todo read book
-                        if (instruction.getTask().isEmpty()) {
-                            throw new IncompleteInstructionException("todo", "task description");
-                        }
+                case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
+                    if (instruction.getTask().isEmpty()) {
+                        throw new IncompleteInstructionException("deadline", "task description");
+                    }
 
-                        tasks.add(new ToDo(instruction.getTask()));
-                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
-                        Storage.saveTasks(tasks);
-                        break;      
+                    if (instruction.getDatetimes().length == 0) {
+                        throw new IncompleteInstructionException("deadline", "date and time");
+                    }
 
-                    case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
-                        if (instruction.getTask().isEmpty()) {
-                            throw new IncompleteInstructionException("deadline", "task description");
-                        }
+                    tasks.add(new Deadline(instruction.getTask(), 
+                            instruction.getDatetimes()[0]));
+                    output("Got it. I've added this task:\n" 
+                            + tasks.get(tasks.size() - 1) 
+                            + "\nNow you have " + tasks.size() + " tasks in the list.");
+                    Storage.saveTasks(tasks);
+                    break;
 
-                        if (instruction.getDatetimes().length == 0) {
-                            throw new IncompleteInstructionException("deadline", "date and time");
-                        }
+                case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16 or event read book /from 2019-10-15 1800 /to 2019-10-16 2000
+                    if (instruction.getTask().isEmpty()) {
+                        throw new IncompleteInstructionException("event", "task description");
+                    }
 
-                        tasks.add(new Deadline(instruction.getTask(), instruction.getDatetimes()[0]));
-                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
-                        Storage.saveTasks(tasks);
-                        break;
+                    if (instruction.getDatetimes().length < 2) {
+                        throw new IncompleteInstructionException("event", "date and time");
+                    }
 
-                    case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16 or event read book /from 2019-10-15 1800 /to 2019-10-16 2000
-                        if (instruction.getTask().isEmpty()) {
-                            throw new IncompleteInstructionException("event", "task description");
-                        }
-
-                        if (instruction.getDatetimes().length < 2) {
-                            throw new IncompleteInstructionException("event", "date and time");
-                        }
-
-                        tasks.add(new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]));
-                        output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
-                        Storage.saveTasks(tasks);
-                        break;
+                    tasks.add(new Event(instruction.getTask(), 
+                            instruction.getDatetimes()[0], 
+                            instruction.getDatetimes()[1]));
+                    output("Got it. I've added this task:\n" 
+                            + tasks.get(tasks.size() - 1) 
+                            + "\nNow you have " + tasks.size() + " tasks in the list.");
+                    Storage.saveTasks(tasks);
+                    break;
                 }
             } catch (IncompleteInstructionException e) {
                 output("ERROR!!! " + e.getMessage());

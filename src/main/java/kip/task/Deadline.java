@@ -7,7 +7,8 @@ import kip.command.Parser;
 
 public class Deadline extends Task {
     private LocalDateTime by;
-    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
+    private static final DateTimeFormatter DISPLAY_FORMATTER = 
+            DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
 
     public Deadline(String description, String by) throws InvalidDateException {
         super(description);

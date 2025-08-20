@@ -38,10 +38,10 @@ import kip.task.Event;
  * @see InvalidDateException
  */
 public class Parser {
-    /** Formatter for date-only strings (yyyy-MM-dd) */
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    /** Formatter for date-time strings (yyyy-MM-dd HHmm) */
-    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    private static final DateTimeFormatter DATE_FORMATTER = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATETIME_FORMATTER = 
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
     
     /**
      * Validates that a string doesn't contain commas to prevent CSV parsing issues.
@@ -53,9 +53,12 @@ public class Parser {
      * @param fieldName The name of the field for error messages
      * @throws InvalidDateException if the input contains commas
      */
-    private static void validateNoCommas(String input, String fieldName) throws InvalidDateException {
+    private static void validateNoCommas(String input, String fieldName) 
+            throws InvalidDateException {
         if (input.contains(",")) {
-            throw new InvalidDateException("Invalid " + fieldName + ": Cannot contain commas (,) as they break the CSV format. Please use a different character.");
+            throw new InvalidDateException("Invalid " + fieldName 
+                    + ": Cannot contain commas (,) as they break the CSV format. "
+                    + "Please use a different character.");
         }
     }
     
@@ -74,7 +77,8 @@ public class Parser {
      * @return LocalDateTime object (time defaults to 00:00 if only date provided)
      * @throws InvalidDateException if the date format is invalid or contains commas
      */
-    public static LocalDateTime parseDateTime(String dateString, String fieldName) throws InvalidDateException {
+    public static LocalDateTime parseDateTime(String dateString, String fieldName) 
+            throws InvalidDateException {
         try {
             // Validate no commas
             validateNoCommas(dateString, fieldName);
@@ -91,7 +95,9 @@ public class Parser {
                 return date.atStartOfDay(); // Convert to LocalDateTime at 00:00
             }
         } catch (DateTimeParseException e) {
-            throw new InvalidDateException("Invalid " + fieldName + " format. Please use yyyy-MM-dd (e.g., 2019-10-15) or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)", e);
+            throw new InvalidDateException("Invalid " + fieldName 
+                    + " format. Please use yyyy-MM-dd (e.g., 2019-10-15) "
+                    + "or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)", e);
         }
     }
     
@@ -125,22 +131,23 @@ public class Parser {
         Task task = null;
         
         switch (type) {
-            case "T": 
-                task = new ToDo(description);
-                break;
-            case "D": // DEADLINE
-                if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
-                    LocalDateTime dateTime = parseDateTime(parts[3].trim(), "deadline");
-                    task = new Deadline(description, dateTime);
-                }
-                break;
-            case "E": // EVENT
-                if (parts.length >= 5 && !parts[3].trim().isEmpty() && !parts[4].trim().isEmpty()) {
-                    LocalDateTime startDateTime = parseDateTime(parts[3].trim(), "start");
-                    LocalDateTime endDateTime = parseDateTime(parts[4].trim(), "end");
-                    task = new Event(description, startDateTime, endDateTime);
-                }
-                break;
+        case "T": 
+            task = new ToDo(description);
+            break;
+        case "D": // DEADLINE
+            if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
+                LocalDateTime dateTime = parseDateTime(parts[3].trim(), "deadline");
+                task = new Deadline(description, dateTime);
+            }
+            break;
+        case "E": // EVENT
+            if (parts.length >= 5 && !parts[3].trim().isEmpty() 
+                    && !parts[4].trim().isEmpty()) {
+                LocalDateTime startDateTime = parseDateTime(parts[3].trim(), "start");
+                LocalDateTime endDateTime = parseDateTime(parts[4].trim(), "end");
+                task = new Event(description, startDateTime, endDateTime);
+            }
+            break;
         }
         
         if (task != null && done) {

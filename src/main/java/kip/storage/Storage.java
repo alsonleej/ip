@@ -90,7 +90,8 @@ public class Storage {
                         tasks.add(task);
                     }
                 } catch (Exception e) {
-                    System.out.println("Error parsing first line: " + firstLine + " - " + e.getMessage());
+                    System.out.println("Error parsing first line: " + firstLine 
+                            + " - " + e.getMessage());
                 }
             }
             
@@ -102,7 +103,8 @@ public class Storage {
                         tasks.add(task);
                     }
                 } catch (Exception e) {
-                    System.out.println("Error parsing line: " + line + " - " + e.getMessage());
+                    System.out.println("Error parsing line: " + line 
+                            + " - " + e.getMessage());
                 }
             }
             
@@ -157,7 +159,7 @@ public class Storage {
                 }
                 
                 writer.println(String.format("%s,%s,%s,%s,%s", 
-                    type, done, description, datetime1, datetime2));
+                        type, done, description, datetime1, datetime2));
             }
         } catch (IOException e) {
             System.out.println("Error saving " + CSV_FILE + ": " + e.getMessage());
