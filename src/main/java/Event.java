@@ -1,28 +1,28 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Event extends Task {
-    private LocalDate from;
-    private LocalDate to;
-    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private LocalDateTime from;
+    private LocalDateTime to;
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
 
     public Event(String description, String from, String to) throws InvalidDateException {
         super(description);
-        this.from = Parser.parseDate(from, "from");
-        this.to = Parser.parseDate(to, "to");
+        this.from = Parser.parseDateTime(from, "from");
+        this.to = Parser.parseDateTime(to, "to");
     }
 
-    public Event(String description, LocalDate from, LocalDate to) {
+    public Event(String description, LocalDateTime from, LocalDateTime to) {
         super(description);
         this.from = from;
         this.to = to;
     }
 
-    public LocalDate getFrom() {
+    public LocalDateTime getFrom() {
         return from;
     }
 
-    public LocalDate getTo() {
+    public LocalDateTime getTo() {
         return to;
     }
 

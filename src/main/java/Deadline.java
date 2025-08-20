@@ -1,21 +1,21 @@
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Deadline extends Task {
-    private LocalDate by;
-    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy");
+    private LocalDateTime by;
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
 
     public Deadline(String description, String by) throws InvalidDateException {
         super(description);
-        this.by = Parser.parseDate(by, "by");
+        this.by = Parser.parseDateTime(by, "by");
     }
 
-    public Deadline(String description, LocalDate by) {
+    public Deadline(String description, LocalDateTime by) {
         super(description);
         this.by = by;
     }
 
-    public LocalDate getBy() {
+    public LocalDateTime getBy() {
         return by;
     }
 

@@ -1,6 +1,4 @@
 import java.io.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 // Adapted from ChatGPT
@@ -9,8 +7,8 @@ import java.util.ArrayList;
 // csv file format:
 // type,done,description,datetime1,datetime2
 // T,0,read book,,
-// D,1,read book,2025-08-19,
-// E,0,read book,2025-08-19,2025-08-20
+// D,1,read book,2025-08-19 0000,
+// E,0,read book,2025-08-19 0000,2025-08-20 0000
 
 public class Storage {
     private static final String CSV_FILE = "tasks.csv";
@@ -96,12 +94,12 @@ public class Storage {
                 } else if (task instanceof Deadline) {
                     type = "D";
                     Deadline deadline = (Deadline) task;
-                    datetime1 = deadline.getBy().format(Parser.getDateFormatter());
+                    datetime1 = deadline.getBy().format(Parser.getDateTimeFormatter());
                 } else if (task instanceof Event) {
                     type = "E";
                     Event event = (Event) task;
-                    datetime1 = event.getFrom().format(Parser.getDateFormatter());
-                    datetime2 = event.getTo().format(Parser.getDateFormatter());
+                    datetime1 = event.getFrom().format(Parser.getDateTimeFormatter());
+                    datetime2 = event.getTo().format(Parser.getDateTimeFormatter());
                 }
                 
                 writer.println(String.format("%s,%s,%s,%s,%s", 

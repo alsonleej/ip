@@ -11,7 +11,7 @@ public class Kip {
     }
 
     public static void main(String[] args) {
-        output("Hello! I'm Kip\nWhat can I do for you?\n");
+        output("Hello! I'm Kip\nWhat can I do for you?\n\nNote: Task descriptions and dates cannot contain commas (,) as they break the CSV format.\nSupported date formats: yyyy-MM-dd (e.g., 2019-10-15) or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)");
         
         Scanner scanner = new Scanner(System.in);
         String userInput;
@@ -96,7 +96,7 @@ public class Kip {
                         Storage.saveTasks(tasks);
                         break;      
 
-                    case DEADLINE: // eg: deadline read book /by 2019-10-15
+                    case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("deadline", "task description");
                         }
@@ -110,7 +110,7 @@ public class Kip {
                         Storage.saveTasks(tasks);
                         break;
 
-                    case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16
+                    case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16 or event read book /from 2019-10-15 1800 /to 2019-10-16 2000
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("event", "task description");
                         }

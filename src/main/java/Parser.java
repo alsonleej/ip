@@ -1,10 +1,11 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 
 public class Parser {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
     
     /**
      * Validates that a string doesn't contain commas to prevent CSV parsing issues
@@ -19,23 +20,30 @@ public class Parser {
     }
     
     /**
-     * Parses a date string in xx/ yyyy-MM-dd format to LocalDate where xx is by, from, to
-     * Basically grabs the relevant datetime field from the user input
+     * Parses a date string in yyyy-MM-dd or yyyy-MM-dd HHmm format to LocalDateTime
      * @param dateString The date string to parse
      * @param fieldName The name of the field for error messages
-     * @return LocalDate object
+     * @return LocalDateTime object (time defaults to 00:00 if only date provided)
      * @throws InvalidDateException if the date format is invalid
      */
-    public static LocalDate parseDate(String dateString, String fieldName) throws InvalidDateException {
+    public static LocalDateTime parseDateTime(String dateString, String fieldName) throws InvalidDateException {
         try {
             // Validate no commas
             validateNoCommas(dateString, fieldName);
             
             // Remove any prefix if present (e.g., "by", "from", "to")
             String cleanDate = dateString.replaceFirst("^" + fieldName + "\\s*", "").trim();
-            return LocalDate.parse(cleanDate, DATE_FORMATTER);
+            
+            // Try to parse as datetime first (yyyy-MM-dd HHmm)
+            try {
+                return LocalDateTime.parse(cleanDate, DATETIME_FORMATTER);
+            } catch (DateTimeParseException e) {
+                // If datetime parsing fails, try date only (yyyy-MM-dd)
+                LocalDate date = LocalDate.parse(cleanDate, DATE_FORMATTER);
+                return date.atStartOfDay(); // Convert to LocalDateTime at 00:00
+            }
         } catch (DateTimeParseException e) {
-            throw new InvalidDateException("Invalid " + fieldName + " date format. Please use yyyy-MM-dd format (e.g., 2019-10-15)", e);
+            throw new InvalidDateException("Invalid " + fieldName + " format. Please use yyyy-MM-dd (e.g., 2019-10-15) or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)", e);
         }
     }
     
@@ -56,20 +64,20 @@ public class Parser {
         Task task = null;
         
         switch (type) {
-            case "T": // TODO
+            case "T": 
                 task = new ToDo(description);
                 break;
             case "D": // DEADLINE
                 if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
-                    LocalDate date = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
-                    task = new Deadline(description, date);
+                    LocalDateTime dateTime = parseDateTime(parts[3].trim(), "deadline");
+                    task = new Deadline(description, dateTime);
                 }
                 break;
             case "E": // EVENT
                 if (parts.length >= 5 && !parts[3].trim().isEmpty() && !parts[4].trim().isEmpty()) {
-                    LocalDate startDate = LocalDate.parse(parts[3].trim(), DATE_FORMATTER);
-                    LocalDate endDate = LocalDate.parse(parts[4].trim(), DATE_FORMATTER);
-                    task = new Event(description, startDate, endDate);
+                    LocalDateTime startDateTime = parseDateTime(parts[3].trim(), "start");
+                    LocalDateTime endDateTime = parseDateTime(parts[4].trim(), "end");
+                    task = new Event(description, startDateTime, endDateTime);
                 }
                 break;
         }
@@ -85,6 +93,7 @@ public class Parser {
      * Parses user input into an Instruction object
      * @param userInput The raw user input string
      * @return Instruction object containing command, task, and datetimes
+     * @throws InvalidDateException if the input contains commas
      */
     public static Instruction parseUserInput(String userInput) throws InvalidDateException {
         // Validate no commas
@@ -115,5 +124,13 @@ public class Parser {
      */
     public static DateTimeFormatter getDateFormatter() {
         return DATE_FORMATTER;
+    }
+    
+    /**
+     * Gets the datetime formatter for consistent datetime formatting across the application
+     * @return DateTimeFormatter for yyyy-MM-dd HHmm format
+     */
+    public static DateTimeFormatter getDateTimeFormatter() {
+        return DATETIME_FORMATTER;
     }
 }
