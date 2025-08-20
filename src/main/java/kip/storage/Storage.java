@@ -18,7 +18,7 @@ import kip.command.Parser;
 // E,0,read book,2025-08-19 0000,2025-08-20 0000
 
 public class Storage {
-    private static final String CSV_FILE = "tasks.csv";
+    private static final String CSV_FILE = "src/main/java/kip/storage/tasks.csv";
     private static final String CSV_HEADER = "type,done,description,datetime1,datetime2";
     
     /**

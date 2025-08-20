@@ -1,9 +1,5 @@
 type,done,description,datetime1,datetime2
-E,1,p m nj,2019-10-15 0000,2019-10-18 0000
-D,1,pn hjh,2021-08-23 0000,
-T,0,fhj,,
-E,1,asdf,2018-10-14 0000,2020-10-14 1800
 T,0,borrow book,,
 D,0,return book ,2019-10-15 1800,
-D,0,buy coffee ,2020-05-18 0000,
+E,1,project meeting ,2020-08-15 0300,2019-10-15 0700
 T,0,join sports club,,
