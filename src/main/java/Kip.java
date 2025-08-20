@@ -30,7 +30,7 @@ public class Kip {
         return new Instruction(command, task, datetimes);
     }
 
-    
+
 
     public static void main(String[] args) {
         output("Hello! I'm Kip\nWhat can I do for you?\n");
@@ -40,7 +40,7 @@ public class Kip {
         Instruction instruction;
         int taskIndex;
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = Storage.loadTasks();
         
         while (true) {
             try {
@@ -67,12 +67,16 @@ public class Kip {
                         out += "Now you have " + tasks.size() + " tasks in the list.";
                         output(out);
                         break;
+
+                    // After every modification to the task list, save all tasks to the file. 
+                    // Could be optimized by saving only the modified task to the file.
                         
                     case MARK: // eg: mark 1
                         taskIndex = Integer.parseInt(instruction.getTask()) - 1;
                         if (taskIndex >= 0 && taskIndex < tasks.size()) {
                             tasks.get(taskIndex).markAsDone();
                             output("Nice! I've marked this task as done:\n" + tasks.get(taskIndex));
+                            Storage.saveTasks(tasks);
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
@@ -84,11 +88,25 @@ public class Kip {
                         if (taskIndex >= 0 && taskIndex < tasks.size()) {
                             tasks.get(taskIndex).unmarkAsDone();
                             output("OK, I've marked this task as not done yet:\n" + tasks.get(taskIndex));
+                            Storage.saveTasks(tasks);
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
                         break;
-     
+
+                        
+                    case DELETE: // eg: delete 1
+                        taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                            Task removedTask = tasks.remove(taskIndex);
+                            output("Noted. I've removed this task:\n" + removedTask 
+                            + "\nNow you have " + tasks.size() + " tasks in the list.");
+                            Storage.saveTasks(tasks);
+                        } else {
+                            throw new NumberFormatException("Invalid task number!");
+                        }
+                        break;
+
                     //TASK ADDING   
                     case TODO: // eg: todo read book
                         if (instruction.getTask().isEmpty()) {
@@ -97,6 +115,7 @@ public class Kip {
 
                         tasks.add(new ToDo(instruction.getTask()));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;      
 
                     case DEADLINE: // eg: deadline read book /by 2025-08-19
@@ -110,6 +129,7 @@ public class Kip {
 
                         tasks.add(new Deadline(instruction.getTask(), instruction.getDatetimes()[0]));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;
 
                     case EVENT: // eg: event read book /from 2025-08-19 /to 2025-08-20
@@ -123,6 +143,7 @@ public class Kip {
 
                         tasks.add(new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;
                 }
             } catch (IncompleteInstructionException e) {
