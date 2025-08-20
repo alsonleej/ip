@@ -10,43 +10,21 @@ public class Kip {
         System.out.println(output);
     }
 
-    private static Instruction parse(String userInput) {
-        // userInput = command task /datetime
-        String[] parts = userInput.split("/", 2); // [command task, datetimes]
-        String instruction = parts[0]; // command task
-        String[] instructionParts = instruction.split(" ", 2); // [command, task] - limit to 2 parts
-        
-        String command = instructionParts[0]; // command
-
-        String task = "";
-        if (instructionParts.length > 1) {
-            task = instructionParts[1]; // task
-        }
-
-        String[] datetimes = new String[0];
-        if (parts.length > 1) {
-            datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
-        }
-        return new Instruction(command, task, datetimes);
-    }
-
-    
-
     public static void main(String[] args) {
-        output("Hello! I'm Kip\nWhat can I do for you?\n");
+        output("Hello! I'm Kip\nWhat can I do for you?\n\nNote: Task descriptions and dates cannot contain commas (,) as they break the CSV format.\nSupported date formats: yyyy-MM-dd (e.g., 2019-10-15) or yyyy-MM-dd HHmm (e.g., 2019-10-15 1800)");
         
         Scanner scanner = new Scanner(System.in);
         String userInput;
         Instruction instruction;
         int taskIndex;
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        ArrayList<Task> tasks = Storage.loadTasks();
         
         while (true) {
             try {
                 userInput = scanner.nextLine().trim();
 
-                instruction = parse(userInput);
+                instruction = Parser.parseUserInput(userInput);
 
                 Command cmd = Command.fromString(instruction.getCommand());
                 if (cmd == null) {
@@ -67,12 +45,16 @@ public class Kip {
                         out += "Now you have " + tasks.size() + " tasks in the list.";
                         output(out);
                         break;
+
+                    // After every modification to the task list, save all tasks to the file. 
+                    // Could be optimized by saving only the modified task to the file.
                         
                     case MARK: // eg: mark 1
                         taskIndex = Integer.parseInt(instruction.getTask()) - 1;
                         if (taskIndex >= 0 && taskIndex < tasks.size()) {
                             tasks.get(taskIndex).markAsDone();
                             output("Nice! I've marked this task as done:\n" + tasks.get(taskIndex));
+                            Storage.saveTasks(tasks);
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
@@ -84,11 +66,25 @@ public class Kip {
                         if (taskIndex >= 0 && taskIndex < tasks.size()) {
                             tasks.get(taskIndex).unmarkAsDone();
                             output("OK, I've marked this task as not done yet:\n" + tasks.get(taskIndex));
+                            Storage.saveTasks(tasks);
                         } else {
                             throw new NumberFormatException("Invalid task number!");
                         }
                         break;
-     
+
+                        
+                    case DELETE: // eg: delete 1
+                        taskIndex = Integer.parseInt(instruction.getTask()) - 1;
+                        if (taskIndex >= 0 && taskIndex < tasks.size()) {
+                            Task removedTask = tasks.remove(taskIndex);
+                            output("Noted. I've removed this task:\n" + removedTask 
+                            + "\nNow you have " + tasks.size() + " tasks in the list.");
+                            Storage.saveTasks(tasks);
+                        } else {
+                            throw new NumberFormatException("Invalid task number!");
+                        }
+                        break;
+
                     //TASK ADDING   
                     case TODO: // eg: todo read book
                         if (instruction.getTask().isEmpty()) {
@@ -97,9 +93,10 @@ public class Kip {
 
                         tasks.add(new ToDo(instruction.getTask()));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;      
 
-                    case DEADLINE: // eg: deadline read book /by 2025-08-19
+                    case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("deadline", "task description");
                         }
@@ -110,9 +107,10 @@ public class Kip {
 
                         tasks.add(new Deadline(instruction.getTask(), instruction.getDatetimes()[0]));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;
 
-                    case EVENT: // eg: event read book /from 2025-08-19 /to 2025-08-20
+                    case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16 or event read book /from 2019-10-15 1800 /to 2019-10-16 2000
                         if (instruction.getTask().isEmpty()) {
                             throw new IncompleteInstructionException("event", "task description");
                         }
@@ -123,6 +121,7 @@ public class Kip {
 
                         tasks.add(new Event(instruction.getTask(), instruction.getDatetimes()[0], instruction.getDatetimes()[1]));
                         output("Got it. I've added this task:\n" + tasks.get(tasks.size() - 1) + "\nNow you have " + tasks.size() + " tasks in the list.");
+                        Storage.saveTasks(tasks);
                         break;
                 }
             } catch (IncompleteInstructionException e) {
@@ -131,6 +130,8 @@ public class Kip {
                 output("ERROR!!! " + e.getMessage());
             } catch (NumberFormatException e) {
                 output("ERROR!!! Please provide a valid task number.");
+            } catch (InvalidDateException e) {
+                output("ERROR!!! " + e.getMessage());
             } catch (Exception e) {
                 output("ERROR!!! An unexpected error occurred: " + e.getMessage());
             }

@@ -1,17 +1,26 @@
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Deadline extends Task {
-    private String by;
+    private LocalDateTime by;
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("MMM dd yyyy HH:mm");
 
-    public Deadline(String description, String by) {
+    public Deadline(String description, String by) throws InvalidDateException {
         super(description);
-        
-        // change first space to ": "
-        by = by.replaceFirst(" ", ": ");
+        this.by = Parser.parseDateTime(by, "by");
+    }
 
-        this.by = by; /// eg this.by = "by Sunday"
+    public Deadline(String description, LocalDateTime by) {
+        super(description);
+        this.by = by;
+    }
+
+    public LocalDateTime getBy() {
+        return by;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + "(" + by + ")"; // eg [D][ ] read book (by: Sunday)
+        return "[D]" + super.toString() + " (by: " + by.format(DISPLAY_FORMATTER) + ")";
     }
 }
