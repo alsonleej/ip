@@ -2,6 +2,7 @@
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
 
 # Project structure
+```
 src/main/java/kip/
 ├── Kip.java                    # Main application class
 ├── task/                       # Task-related classes
@@ -20,3 +21,4 @@ src/main/java/kip/
 └── storage/                    # Storage and file handling
     ├── Storage.java           # File I/O operations
     └── tasks.csv              # Data file
+```
