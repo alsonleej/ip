@@ -80,6 +80,7 @@ public class Kip {
         String userInput;
         Instruction instruction;
         int taskIndex;
+        String out;
 
         ArrayList<Task> tasks = Storage.loadTasks();
         
@@ -101,7 +102,7 @@ public class Kip {
                     return;
                     
                 case LIST: // eg: list
-                    String out = "Here are the tasks in your list:\n";
+                    out = "Here are the tasks in your list:\n";
                     for (int i = 0; i < tasks.size(); i++) {
                         out += (i + 1) + ". " + tasks.get(i) + "\n";
                     }
@@ -149,20 +150,36 @@ public class Kip {
                         throw new NumberFormatException("Invalid task number!");
                     }
                     break;
+    
+
+                case FIND: // eg: find book
+                    String keyword = instruction.getTask();
+                    ArrayList<Task> matchingTasks = new ArrayList<>();
+                    for (Task task : tasks) {
+                        if (task.getDescription().contains(keyword)) {
+                            matchingTasks.add(task);
+                        }
+                    }
+
+                    if (matchingTasks.isEmpty()) {
+                        output("No matching tasks found.");
+                    } else {
+                        out = "Here are the matching tasks in your list:\n";
+                        for (int i = 0; i < matchingTasks.size(); i++) {
+                            out += (i + 1) + ". " + matchingTasks.get(i) + "\n";
+                        }
+                        output(out);
+                    }
+                    break;
+                
 
                 //TASK ADDING   
                 case TODO: // eg: todo read book
                     if (instruction.getTask().isEmpty()) {
                         throw new IncompleteInstructionException("todo", "task description");
                     }
-
-                    tasks.add(new ToDo(instruction.getTask()));
-                    output("Got it. I've added this task:\n" 
-                            + tasks.get(tasks.size() - 1) 
-                            + "\nNow you have " + tasks.size() + " tasks in the list.");
-                    Storage.saveTasks(tasks);
-                    break;      
-
+                    break;
+                
                 case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
                     if (instruction.getTask().isEmpty()) {
                         throw new IncompleteInstructionException("deadline", "task description");

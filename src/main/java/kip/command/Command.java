@@ -43,8 +43,8 @@ public enum Command {
     DEADLINE("deadline"),
     /** Command to add an Event task */
     EVENT("event"),
-    /** Command to delete a task */
-    DELETE("delete");
+    DELETE("delete"),
+    FIND("find");
 
     /** The string representation of the command */
     private final String commandString;
