@@ -1,3 +1,5 @@
+package kip.exception;
+
 public class UnknownCommandException extends Exception {
     private final String command;
 

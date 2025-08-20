@@ -1,3 +1,5 @@
+package kip.command;
+
 public enum Command {
     BYE("bye"),
     LIST("list"),
