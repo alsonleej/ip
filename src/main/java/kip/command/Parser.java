@@ -178,17 +178,22 @@ public class Parser {
     public static Instruction parseUserInput(String userInput) throws InvalidDateException {
         // Validate no commas
         validateNoCommas(userInput, "user input");
+        
+        // Remove BOM character if present
+        if (userInput.startsWith("\uFEFF")) {
+            userInput = userInput.substring(1);
+        }
 
         // userInput = command task /datetime
         String[] parts = userInput.split("/", 2); // [command task, datetimes]
         String instruction = parts[0]; // command task
         String[] instructionParts = instruction.split(" ", 2); // [command, task] - limit to 2 parts
         
-        String command = instructionParts[0]; // command
+        String command = instructionParts[0].trim(); // command
 
         String task = "";
         if (instructionParts.length > 1) {
-            task = instructionParts[1]; // task
+            task = instructionParts[1].trim(); // task
         }
 
         String[] datetimes = new String[0];

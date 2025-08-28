@@ -25,19 +25,25 @@ src/main/java/kip/
 
 # Note to self
 
-## To test methods with gradle
+## To test methods with gradle (unit tests)
 ```
 ./gradlew test
 ```
 
-# To test input and outputs
+## To test input and outputs (regression tests)
 ```
 PS C:\Users\alsonleej\ip\ip\text-ui-test> ./runtest.bat
 ```
 
-# To update outputs
+## To update outputs
 ```
 PS C:\Users\alsonleej\ip\ip\text-ui-test> ./runtest.bat
 cp .\ACTUAL.TXT .\EXPECTED.TXT
 ```
 
+## To run manually
+```
+in PS C:\Users\alsonleej\ip\ip>
+javac -cp src/main/java -d out src/main/java/kip/Kip.java
+java -cp out kip.Kip
+```

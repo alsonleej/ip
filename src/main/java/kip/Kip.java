@@ -13,6 +13,7 @@ import kip.exception.UnknownCommandException;
 import kip.exception.IncompleteInstructionException;
 import kip.exception.InvalidDateException;
 import kip.storage.Storage;
+import kip.KipService;
 
 /**
  * Kip is a command-line task management application that allows users to manage
@@ -78,151 +79,21 @@ public class Kip {
         
         Scanner scanner = new Scanner(System.in);
         String userInput;
-        Instruction instruction;
-        int taskIndex;
-        String out;
-
-        ArrayList<Task> tasks = Storage.loadTasks();
+        KipService kipService = new KipService();
         
         while (true) {
             try {
                 userInput = scanner.nextLine().trim();
-
-                instruction = Parser.parseUserInput(userInput);
-
-                Command cmd = Command.fromString(instruction.getCommand());
-                if (cmd == null) {
-                    throw new UnknownCommandException(instruction.getCommand());
-                }
+                String response = kipService.processCommand(userInput);
                 
-                switch (cmd) {
-                case BYE: // eg: bye
-                    output("Bye. Hope to see you again soon!");
+                if (response.equals("Bye. Hope to see you again soon!")) {
+                    output(response);
                     scanner.close();
                     return;
-                    
-                case LIST: // eg: list
-                    out = "Here are the tasks in your list:\n";
-                    for (int i = 0; i < tasks.size(); i++) {
-                        out += (i + 1) + ". " + tasks.get(i) + "\n";
-                    }
-                    out += "Now you have " + tasks.size() + " tasks in the list.";
-                    output(out);
-                    break;
-
-                // After every modification to the task list, save all tasks to the file. 
-                // Could be optimized by saving only the modified task to the file.
-                    
-                case MARK: // eg: mark 1
-                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                        tasks.get(taskIndex).markAsDone();
-                        output("Nice! I've marked this task as done:\n" 
-                                + tasks.get(taskIndex));
-                        Storage.saveTasks(tasks);
-                    } else {
-                        throw new NumberFormatException("Invalid task number!");
-                    }
-                    break;
-
-                    
-                case UNMARK: // eg: unmark 1
-                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                        tasks.get(taskIndex).unmarkAsDone();
-                        output("OK, I've marked this task as not done yet:\n" 
-                                + tasks.get(taskIndex));
-                        Storage.saveTasks(tasks);
-                    } else {
-                        throw new NumberFormatException("Invalid task number!");
-                    }
-                    break;
-
-                    
-                case DELETE: // eg: delete 1
-                    taskIndex = Integer.parseInt(instruction.getTask()) - 1;
-                    if (taskIndex >= 0 && taskIndex < tasks.size()) {
-                        Task removedTask = tasks.remove(taskIndex);
-                        output("Noted. I've removed this task:\n" + removedTask 
-                                + "\nNow you have " + tasks.size() + " tasks in the list.");
-                        Storage.saveTasks(tasks);
-                    } else {
-                        throw new NumberFormatException("Invalid task number!");
-                    }
-                    break;
-    
-
-                case FIND: // eg: find book
-                    String keyword = instruction.getTask();
-                    ArrayList<Task> matchingTasks = new ArrayList<>();
-                    for (Task task : tasks) {
-                        if (task.getDescription().contains(keyword)) {
-                            matchingTasks.add(task);
-                        }
-                    }
-
-                    if (matchingTasks.isEmpty()) {
-                        output("No matching tasks found.");
-                    } else {
-                        out = "Here are the matching tasks in your list:\n";
-                        for (int i = 0; i < matchingTasks.size(); i++) {
-                            out += (i + 1) + ". " + matchingTasks.get(i) + "\n";
-                        }
-                        output(out);
-                    }
-                    break;
-                
-
-                //TASK ADDING   
-                case TODO: // eg: todo read book
-                    if (instruction.getTask().isEmpty()) {
-                        throw new IncompleteInstructionException("todo", "task description");
-                    }
-                    break;
-                
-                case DEADLINE: // eg: deadline read book /by 2019-10-15 or deadline read book /by 2019-10-15 1800
-                    if (instruction.getTask().isEmpty()) {
-                        throw new IncompleteInstructionException("deadline", "task description");
-                    }
-
-                    if (instruction.getDatetimes().length == 0) {
-                        throw new IncompleteInstructionException("deadline", "date and time");
-                    }
-
-                    tasks.add(new Deadline(instruction.getTask(), 
-                            instruction.getDatetimes()[0]));
-                    output("Got it. I've added this task:\n" 
-                            + tasks.get(tasks.size() - 1) 
-                            + "\nNow you have " + tasks.size() + " tasks in the list.");
-                    Storage.saveTasks(tasks);
-                    break;
-
-                case EVENT: // eg: event read book /from 2019-10-15 /to 2019-10-16 or event read book /from 2019-10-15 1800 /to 2019-10-16 2000
-                    if (instruction.getTask().isEmpty()) {
-                        throw new IncompleteInstructionException("event", "task description");
-                    }
-
-                    if (instruction.getDatetimes().length < 2) {
-                        throw new IncompleteInstructionException("event", "date and time");
-                    }
-
-                    tasks.add(new Event(instruction.getTask(), 
-                            instruction.getDatetimes()[0], 
-                            instruction.getDatetimes()[1]));
-                    output("Got it. I've added this task:\n" 
-                            + tasks.get(tasks.size() - 1) 
-                            + "\nNow you have " + tasks.size() + " tasks in the list.");
-                    Storage.saveTasks(tasks);
-                    break;
                 }
-            } catch (IncompleteInstructionException e) {
-                output("ERROR!!! " + e.getMessage());
-            } catch (UnknownCommandException e) {
-                output("ERROR!!! " + e.getMessage());
-            } catch (NumberFormatException e) {
-                output("ERROR!!! Please provide a valid task number.");
-            } catch (InvalidDateException e) {
-                output("ERROR!!! " + e.getMessage());
+                
+                output(response);
+                
             } catch (Exception e) {
                 output("ERROR!!! An unexpected error occurred: " + e.getMessage());
             }
