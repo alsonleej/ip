@@ -5,7 +5,8 @@ import kip.task.Task;
 import kip.command.Command;
 import kip.command.Instruction;
 import kip.command.Parser;
-import kip.exception.*;
+import kip.exception.IncompleteInstructionException;
+import kip.exception.UnknownCommandException;
 import kip.storage.Storage;
 
 public class KipService {
