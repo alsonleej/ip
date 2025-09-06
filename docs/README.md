@@ -379,4 +379,10 @@ If you encounter any issues not covered in this guide:
 
 ---
 
+## Acknowledging Sources
+
+[DaKip.png](https://www.dreamstime.com/cheerful-animated-kangaroo-hopping-australian-landscape-joey-cheerful-animated-kangaroo-hopping-image363413866) from Dreamstime
+[DaUser.png](https://imgflip.com/memetemplate/365987260/Red-Crewmate-facing-Left) from Imgflip
+[kip-backg.png](https://in.pinterest.com/pin/851391504557686000/) from Pinterest
+
 *Happy task managing with Kip! 🎉*
