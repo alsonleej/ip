@@ -17,6 +17,8 @@ package kip.command;
  *   <li><strong>DEADLINE</strong> - Adds a new Deadline task</li>
  *   <li><strong>EVENT</strong> - Adds a new Event task</li>
  *   <li><strong>DELETE</strong> - Removes a task</li>
+ *   <li><strong>FIND</strong> - Finds a task</li>
+ *   <li><strong>HELP</strong> - Displays all commands</li>
  * </ul>
  * 
  * <p>Commands are case-insensitive when parsing user input, providing a
@@ -44,7 +46,8 @@ public enum Command {
     /** Command to add an Event task */
     EVENT("event"),
     DELETE("delete"),
-    FIND("find");
+    FIND("find"),
+    HELP("help");
 
     /** The string representation of the command */
     private final String commandString;

@@ -138,6 +138,17 @@ public class KipService {
                 }
                 return out;
             }
+
+        case HELP:
+            return "Here are the available commands:\n"
+                    + "bye - Exits the application\n"
+                    + "list - Displays all tasks\n"
+                    + "mark <task_number> - Marks a task as done\n"
+                    + "unmark <task_number> - Marks a task as undone\n"
+                    + "delete <task_number> - Removes a task\n"
+                    + "todo <description> - Adds a ToDo task\n"
+                    + "deadline <description> /by <date> - Adds a Deadline task\n"
+                    + "event <description> /from <date> /to <date> - Adds an Event task\n";
             
         case TODO:
             if (instruction.getTask().isEmpty()) {
