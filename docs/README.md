@@ -1,6 +1,6 @@
 # Kip User Guide
 
-![Kip Logo](images/DaKip.png)
+![Kip Chatbot GUI](docs/Ui.png)
 
 **Kip** is a desktop task management application that helps you organize and track your tasks efficiently. Whether you're managing daily todos, tracking project deadlines, or scheduling events, Kip provides a simple yet powerful command-line interface to keep your tasks organized.
 
@@ -16,8 +16,10 @@
 
 ## Quick Start
 
-1. **Download** the latest version of Kip
-2. **Run** the application using `java -cp build/classes/java/main kip.Kip`
+1. [**Download**](**link here**) the latest version of Kip
+2. **Run** the application:
+    - For GUI, use `./gradlew run`
+    - For CLI, use `java -cp build/classes/java/main kip.Kip`
 3. **Type** a command and press Enter to execute it
 4. **Type** `bye` to exit the application
 
@@ -25,7 +27,6 @@
 
 When you first run Kip, it will:
 - Create a data file to store your tasks
-- Display a welcome message with available commands
 - Show you the supported date formats
 
 ---
@@ -210,6 +211,11 @@ Here are the matching tasks in your list:
 1. [E][ ] team meeting (from: Jan 20 2025 14:00 to: Jan 20 2025 16:00)
 ____________________________________________________________
 ```
+
+#### Asking for Help
+Displays a list of available commands.
+
+**Format:** `help`
 
 ### Exiting the Application
 
