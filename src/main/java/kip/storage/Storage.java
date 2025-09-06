@@ -69,11 +69,16 @@ public class Storage {
         ArrayList<Task> tasks = new ArrayList<>();
         File csvFile = new File(CSV_FILE);
         
+        // Assert that CSV_FILE path is not null or empty
+        assert CSV_FILE != null && !CSV_FILE.trim().isEmpty() : "CSV_FILE path must not be null or empty";
+        
         // Create file if it doesn't exist
         if (!csvFile.exists()) {
             try {
                 csvFile.createNewFile();
                 System.out.println("Created new " + CSV_FILE + " file");
+                // Assert that file was created successfully
+                assert csvFile.exists() : "CSV file should exist after creation";
             } catch (IOException e) {
                 System.out.println("Error creating " + CSV_FILE + ": " + e.getMessage());
             }
@@ -82,6 +87,9 @@ public class Storage {
         
         try (BufferedReader reader = new BufferedReader(new FileReader(csvFile))) {
             String line;
+            
+            // Assert that file exists and is readable
+            assert csvFile.exists() && csvFile.canRead() : "CSV file must exist and be readable";
             
             // Skip header if exists
             String firstLine = reader.readLine();
@@ -93,6 +101,8 @@ public class Storage {
                     Task task = Parser.parseTaskLine(firstLine);
                     if (task != null) {
                         tasks.add(task);
+                        // Assert that task was added successfully
+                        assert tasks.contains(task) : "Task should be added to the list";
                     }
                 } catch (Exception e) {
                     System.out.println("Error parsing first line: " + firstLine 
@@ -106,6 +116,8 @@ public class Storage {
                     Task task = Parser.parseTaskLine(line);
                     if (task != null) {
                         tasks.add(task);
+                        // Assert that task was added successfully
+                        assert tasks.contains(task) : "Task should be added to the list";
                     }
                 } catch (Exception e) {
                     System.out.println("Error parsing line: " + line 
@@ -113,6 +125,8 @@ public class Storage {
                 }
             }
             
+            // Assert that tasks list is not null after loading
+            assert tasks != null : "Tasks list should not be null after loading";
             System.out.println("Loaded " + tasks.size() + " tasks from " + CSV_FILE);
         } catch (IOException e) {
             System.out.println("Error reading " + CSV_FILE + ": " + e.getMessage());
@@ -138,12 +152,17 @@ public class Storage {
      * @param tasks ArrayList of tasks to save
      */
     public static void saveTasks(ArrayList<Task> tasks) {
+        // Assert that tasks list is not null
+        assert tasks != null : "Tasks list must not be null when saving";
+        
         try (PrintWriter writer = new PrintWriter(new FileWriter(CSV_FILE))) {
             // Write header
             writer.println(CSV_HEADER);
             
             // Write each task
             for (Task task : tasks) {
+                // Assert that each task is not null
+                assert task != null : "Individual task must not be null";
                 String type = "";
                 String done = task.isDone() ? "1" : "0";
                 String description = task.getDescription();
@@ -155,13 +174,21 @@ public class Storage {
                 } else if (task instanceof Deadline) {
                     type = "D";
                     Deadline deadline = (Deadline) task;
+                    // Assert that deadline has a valid 'by' date
+                    assert deadline.getBy() != null : "Deadline task must have a valid 'by' date";
                     datetime1 = deadline.getBy().format(Parser.getDateTimeFormatter());
                 } else if (task instanceof Event) {
                     type = "E";
                     Event event = (Event) task;
+                    // Assert that event has valid start and end times
+                    assert event.getFrom() != null : "Event task must have a valid 'from' time";
+                    assert event.getTo() != null : "Event task must have a valid 'to' time";
                     datetime1 = event.getFrom().format(Parser.getDateTimeFormatter());
                     datetime2 = event.getTo().format(Parser.getDateTimeFormatter());
                 }
+                
+                // Assert that we have a valid type for the task
+                assert !type.isEmpty() : "Task type must be determined for all tasks";
                 
                 writer.println(String.format("%s,%s,%s,%s,%s", 
                         type, done, description, datetime1, datetime2));

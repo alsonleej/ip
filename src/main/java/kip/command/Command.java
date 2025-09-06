@@ -83,8 +83,13 @@ public enum Command {
             return null;
         }
         
+        // Assert that text is not empty when not null
+        assert !text.trim().isEmpty() : "Command text must not be empty when not null";
+        
         for (Command command : Command.values()) {
             if (command.commandString.equalsIgnoreCase(text)) {
+                // Assert that we found a valid command
+                assert command != null : "Found command must not be null";
                 return command;
             }
         }
