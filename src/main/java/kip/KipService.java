@@ -37,6 +37,7 @@ public class KipService {
         String out;
         
         switch (cmd) {
+        // as each case has a return, break is not needed
         case BYE:
             return "Bye. Hope to see you again soon!";
             

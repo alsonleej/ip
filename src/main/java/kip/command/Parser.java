@@ -125,7 +125,7 @@ public class Parser {
         if (parts.length < 3) return null; // Skip invalid lines
         
         String type = parts[0].trim();
-        boolean done = parts[1].trim().equals("1");
+        boolean isDone = parts[1].trim().equals("1");
         String description = parts[2].trim();
         
         Task task = null;
@@ -150,7 +150,7 @@ public class Parser {
             break;
         }
         
-        if (task != null && done) {
+        if (task != null && isDone) {
             task.markAsDone();
         }
         
@@ -196,11 +196,11 @@ public class Parser {
             task = instructionParts[1].trim(); // task
         }
 
-        String[] datetimes = new String[0];
+        String[] dateTimes = new String[0];
         if (parts.length > 1) {
-            datetimes = parts[1].split("/"); // [datetime, datetime2, etc]
+            dateTimes = parts[1].split("/"); // [datetime, datetime2, etc]
         }
-        return new Instruction(command, task, datetimes);
+        return new Instruction(command, task, dateTimes);
     }
     
     /**
