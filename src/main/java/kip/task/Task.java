@@ -46,6 +46,10 @@ public abstract class Task {
         }
         this.description = description.trim();
         this.isDone = false;
+        
+        // Assert that object is in valid state after construction
+        assert this.description != null && !this.description.isEmpty() : "Description must not be null or empty after construction";
+        assert !this.isDone : "Task should be initially marked as not done";
     }
 
     /**
@@ -54,6 +58,8 @@ public abstract class Task {
      * @return "X" if the task is done, " " (space) if not done
      */
     public String getStatusIcon() {
+        // Assert that status icon is valid
+        assert isDone == true || isDone == false : "isDone must be a boolean value";
         return (isDone ? "X" : " "); 
     }
 
@@ -63,6 +69,8 @@ public abstract class Task {
      * @return The task description
      */
     public String getDescription() {
+        // Assert that description is not null
+        assert description != null : "Description must not be null";
         return description;
     }
 
@@ -83,6 +91,8 @@ public abstract class Task {
      */
     public void markAsDone() {
         isDone = true;
+        // Assert that task is marked as done
+        assert isDone == true : "Task should be marked as done after calling markAsDone()";
     }
 
     /**
@@ -93,6 +103,8 @@ public abstract class Task {
      */
     public void unmarkAsDone() {
         isDone = false;
+        // Assert that task is unmarked
+        assert isDone == false : "Task should be unmarked after calling unmarkAsDone()";
     }
 
     /**
@@ -105,6 +117,11 @@ public abstract class Task {
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        // Assert that description is not null before creating string representation
+        assert description != null : "Description must not be null for toString()";
+        String result = "[" + getStatusIcon() + "] " + description;
+        // Assert that result is not null
+        assert result != null : "toString() result must not be null";
+        return result;
     }
 }
